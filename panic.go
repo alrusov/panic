@@ -55,7 +55,7 @@ func SaveStackToLog() {
 				}
 			}
 
-			misc.StopApp(666)
+			misc.StopApp(misc.ExPanic)
 			misc.Exit()
 		}
 	}
