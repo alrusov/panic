@@ -38,7 +38,7 @@ func SaveStackToLog() {
 	if enabled {
 		r := recover()
 		if r != nil {
-			misc.Logger("EM", "%v", r)
+			misc.Logger("", "EM", "%v", r)
 
 			stack := misc.GetCallStack(1)
 			n := len(stack)
@@ -51,7 +51,7 @@ func SaveStackToLog() {
 				}
 
 				if show {
-					misc.Logger("EM", `  at [%d] %s %s:%d`, n-i-1, df.FuncName, df.FileName, df.Line)
+					misc.Logger("", "EM", ` at [%d] %s %s:%d`, n-i-1, df.FuncName, df.FileName, df.Line)
 				}
 			}
 
