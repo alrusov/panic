@@ -6,7 +6,6 @@ package panic
 import (
 	"bytes"
 	"fmt"
-	"strings"
 
 	"github.com/alrusov/misc"
 )
@@ -52,22 +51,12 @@ func SaveStackToLog() {
 // GetStack -
 func GetStack() string {
 	stack := misc.GetCallStack(1)
-	n := len(stack)
 	buf := new(bytes.Buffer)
-	show := false
-	lf := ""
-
-	for i := 0; i < n; i++ {
-		df := stack[i]
-
-		if !show && !strings.HasPrefix(df.FuncName, "runtime.") {
-			show = true
-		}
-
-		if show {
-			buf.WriteString(fmt.Sprintf(`%s  at [%d] %s %s:%d`, lf, n-i-1, df.FuncName, df.FileName, df.Line))
-			lf = "\n"
-		}
+	eos := ""
+	n := len(stack)
+	for i, df := range stack {
+		buf.WriteString(fmt.Sprintf(`%s  at [%d] %s %s:%d`, eos, n-i-1, df.FuncName, df.FileName, df.Line))
+		eos = misc.EOS
 	}
 
 	return string(buf.Bytes())

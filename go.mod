@@ -1,5 +1,5 @@
 module github.com/alrusov/panic
 
-go 1.14
+go 1.15
 
-require github.com/alrusov/misc v0.1.18
+require github.com/alrusov/misc v0.1.31
