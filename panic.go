@@ -6,6 +6,8 @@ package panic
 import (
 	"bytes"
 	"fmt"
+	"runtime"
+	"sync/atomic"
 
 	"github.com/alrusov/misc"
 )
@@ -13,8 +15,16 @@ import (
 //----------------------------------------------------------------------------------------------------------------------------//
 
 var (
-	enabled = true
+	enabled   = true
+	dumpStack = false
+	id        = uint64(0)
 )
+
+//----------------------------------------------------------------------------------------------------------------------------//
+
+func init() {
+	enabled = !misc.IsDebug()
+}
 
 //----------------------------------------------------------------------------------------------------------------------------//
 
@@ -28,18 +38,41 @@ func Disable() {
 	enabled = false
 }
 
-func init() {
-	enabled = !misc.IsDebug()
+// SetDumpStack --
+func SetDumpStack(enable bool) {
+	dumpStack = enable
+}
+
+//----------------------------------------------------------------------------------------------------------------------------//
+
+// ID --
+func ID() uint64 {
+	i := atomic.AddUint64(&id, 1)
+	if dumpStack {
+		misc.Logger("", "T3", "[panicID %d] Assigned to %s", i, GetStack())
+	}
+	return i
 }
 
 //----------------------------------------------------------------------------------------------------------------------------//
 
 // SaveStackToLog - internal panic function
 func SaveStackToLog() {
+	SaveStackToLogEx(0)
+}
+
+// SaveStackToLogEx - internal panic function
+func SaveStackToLogEx(id uint64) {
 	if enabled {
 		r := recover()
 		if r != nil {
-			misc.Logger("", "EM", "%v\n%s", r, GetStack())
+			misc.Logger("", "EM", "[panicID %d] %v\n%s", id, r, GetStack())
+
+			var mem runtime.MemStats
+			runtime.ReadMemStats(&mem)
+			misc.Logger("", "IN", "AllocSys %d, HeapSys %d, HeapInuse: %d, HeapObjects %d, StackSys: %d, StackInuse: %d; NumCPU: %d; GoMaxProcs: %d; NumGoroutine: %d",
+				mem.Sys, mem.HeapSys, mem.HeapInuse, mem.HeapObjects, mem.StackSys, mem.StackInuse, runtime.NumCPU(), runtime.GOMAXPROCS(-1), runtime.NumGoroutine())
+
 			misc.StopApp(misc.ExPanic)
 			misc.Exit()
 		}
