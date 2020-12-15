@@ -49,7 +49,7 @@ func SetDumpStack(enable bool) {
 func ID() uint64 {
 	i := atomic.AddUint64(&id, 1)
 	if dumpStack {
-		misc.Logger("", "T3", "[panicID %d] Assigned to %s", i, GetStack())
+		misc.Logger("", "AL", "[panicID %d] Assigned to %s", i, GetStack())
 	}
 	return i
 }
