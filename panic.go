@@ -62,7 +62,7 @@ func SaveStackToLog() {
 }
 
 // SaveStackToLogEx - internal panic function
-func SaveStackToLogEx(id uint64) {
+func SaveStackToLogEx(id uint64, details ...interface{}) {
 	if enabled {
 		r := recover()
 		if r != nil {
@@ -72,6 +72,24 @@ func SaveStackToLogEx(id uint64) {
 			runtime.ReadMemStats(&mem)
 			misc.Logger("", "IN", "AllocSys %d, HeapSys %d, HeapInuse: %d, HeapObjects %d, StackSys: %d, StackInuse: %d; NumCPU: %d; GoMaxProcs: %d; NumGoroutine: %d",
 				mem.Sys, mem.HeapSys, mem.HeapInuse, mem.HeapObjects, mem.StackSys, mem.StackInuse, runtime.NumCPU(), runtime.GOMAXPROCS(-1), runtime.NumGoroutine())
+
+			fmt := ""
+
+			if len(details) > 0 {
+				ok := false
+				fmt, ok = details[0].(string)
+				if !ok {
+					fmt = ""
+				}
+			}
+
+			if fmt != "" {
+				p := []interface{}{}
+				if len(details) > 1 {
+					p = details[1:]
+				}
+				misc.Logger("", "IN", fmt, p...)
+			}
 
 			misc.StopApp(misc.ExPanic)
 			misc.Exit()
