@@ -62,7 +62,7 @@ func SaveStackToLog() {
 }
 
 // SaveStackToLogEx - internal panic function
-func SaveStackToLogEx(id uint64, details ...interface{}) {
+func SaveStackToLogEx(id uint64, details ...any) {
 	if enabled {
 		r := recover()
 		if r != nil {
@@ -84,7 +84,7 @@ func SaveStackToLogEx(id uint64, details ...interface{}) {
 			}
 
 			if fmt != "" {
-				p := []interface{}{}
+				p := []any{}
 				if len(details) > 1 {
 					p = details[1:]
 				}
