@@ -70,9 +70,9 @@ func SaveStackToLogEx(id uint64, details ...any) {
 
 			var mem runtime.MemStats
 			runtime.ReadMemStats(&mem)
-			misc.Logger("", "IN", "AllocSys %d, HeapSys %d, HeapInuse: %d, HeapObjects %d, StackSys: %d, StackInuse: %d; NumCPU: %d; GoMaxProcs: %d; NumGoroutine: %d",
+			misc.Logger("", "IN", "Uptime %d, AllocSys %d, HeapSys %d, HeapInuse: %d, HeapObjects %d, StackSys: %d, StackInuse: %d; NumCPU: %d; GoMaxProcs: %d; NumGoroutine: %d",
+				int64(misc.NowUTC().Sub(misc.AppStartTime()).Seconds()),
 				mem.Sys, mem.HeapSys, mem.HeapInuse, mem.HeapObjects, mem.StackSys, mem.StackInuse, runtime.NumCPU(), runtime.GOMAXPROCS(-1), runtime.NumGoroutine())
-
 			fmt := ""
 
 			if len(details) > 0 {
